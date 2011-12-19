@@ -41,6 +41,9 @@
 #import "CTBareAttachment.h"
 
 @interface CTCoreMessage (Private)
+
+
+-(NSDate *) _dateFromOrigDate:(struct mailimf_date_time *) origDate; 
 - (CTCoreAddress *)_addressFromMailbox:(struct mailimf_mailbox *)mailbox;
 - (NSSet *)_addressListFromMailboxList:(struct mailimf_mailbox_list *)mailboxList;
 - (struct mailimf_mailbox_list *)_mailboxListFromAddressList:(NSSet *)addresses;
@@ -441,6 +444,15 @@ char * etpan_encode_mime_header(char * phrase)
 		myFields->fld_to = mailimf_to_new(imf);
 }
 
+-(NSString *) sentDate{
+    if(myFields->fld_orig_date == NULL){
+        return @"none";
+    }else{
+
+        return [self _dateFromOrigDate:myFields->fld_orig_date->dt_date_time];
+    }
+}
+
 
 - (NSSet *)cc {
 	if (myFields->fld_cc == NULL)
@@ -612,6 +624,17 @@ char * etpan_encode_mime_header(char * phrase)
     }
 	return address;
 }
+
+-(NSString *) _dateFromOrigDate:(struct mailimf_date_time *) origDate; {
+    if(origDate == NULL){
+        //TODO better to return a really old date than a false new one
+        return @"none";
+    }
+    
+    
+    return [NSString stringWithFormat:@"%d-%d-%d %d:%d:%d", origDate->dt_year, origDate->dt_month, origDate->dt_day, origDate->dt_hour, origDate->dt_min, origDate->dt_sec];
+}
+
 
 
 - (NSSet *)_addressListFromMailboxList:(struct mailimf_mailbox_list *)mailboxList; {

@@ -258,5 +258,7 @@
 
 /* Intended for advanced use only */
 - (struct mailmessage *)messageStruct;
+
+-(NSString *) sentDate;
 - (mailimap *)imapSession;
 @end
